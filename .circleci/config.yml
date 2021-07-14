@@ -28,7 +28,7 @@ workflows:
 jobs:
     check-docker-code:
       docker:
-      - image: ubuntu
+      - image: python:3.7.3-stretch
       working_directory: ~/project/
       steps:
       - checkout
