@@ -22,7 +22,7 @@ workflows:
             - check-docker-code
       - create-kubernetes-cluster:
           requires:
-            - aws-ecr/build_and_push_image
+            - aws-ecr/build-and-push-image 
 
  
 jobs:
@@ -68,7 +68,7 @@ jobs:
               --with-oidc \
               --ssh-access \
               --ssh-public-key poppy-key 
-       - run:
+        - run:
           name: create kubernetes resources
           command: |
             aws eks update-kubeconfig --name "capstone-${CIRCLE_SHA1:0:7}"
