@@ -48,19 +48,19 @@ workflows:
           requires:
             - check-docker-code
 
-      # - aws-eks/create-cluster:
-      #     cluster-name: cluster_name
-      #     aws-region: AWS_DEFAULT_REGION
-      #     requires:
-      #       - build-and-push-image
+      - aws-eks/create-cluster:
+          cluster-name: cluster_name
+          aws-region: AWS_DEFAULT_REGION
+          requires:
+            - build-and-push-image
 
-      # - deploy-application:
-      #     cluster-name: cluster_name
-      #     aws-region: AWS_DEFAULT_REGION
-      #     docker-image-name: "${AWS_ECR_URL}/${docker_image-name:${CIRCLE_SHA1:0:7}"
-      #     version-info: "${CIRCLE_SHA1:0:7}"
-      #     requires:
-      #       - aws-eks/create-cluster
+      - deploy-application:
+          cluster-name: cluster_name
+          aws-region: AWS_DEFAULT_REGION
+          docker-image-name: "${AWS_ECR_URL}/${docker_image-name}:${CIRCLE_SHA1:0:7}"
+          version-info: "${CIRCLE_SHA1:0:7}"
+          requires:
+            - aws-eks/create-cluster
 
 #       - test-application:
 #           name: test-application
@@ -108,28 +108,27 @@ jobs:
               echo "failed to lint dockerfile - please fix and try again"
             fi
 
-#   deploy-application:
-#     executor: aws-eks/python3
-#     steps:
-#       - checkout
-#       - run:
-#           name: Create deployment manifest
-#           command: |
-#             BUILD_DATE=$(date '+%Y%m%d%H%M%S')
-#             cat deployment/demo-app-deployment.yaml.template |\
-#                sed "s|DOCKER_IMAGE_NAME|<< parameters.docker-image-name >>|\
-#                 g;s|BUILD_DATE_VALUE|$BUILD_DATE|g;s|VERSION_INFO_VALUE|\
-#                 << parameters.version-info >>|g" > deployment/demo-app-deployment.yaml
-#       - aws-eks/update-kubeconfig-with-authenticator:
-#           cluster-name: << parameters.cluster-name >>
-#           install-kubectl: true
-#           aws-region: << parameters.aws-region >>
-#       - kubernetes/create-or-update-resource:
-#           resource-file-path: "deployment/demo-app-deployment.yaml"
-#           get-rollout-status: true
-#           resource-name: deployment/demoapp
-#       - kubernetes/create-or-update-resource:
-#           resource-file-path: "deployment/demo-app-service.yaml"
+  deploy-application:
+    executor: aws-eks/python3
+    steps:
+      - checkout
+      - run:
+          name: Create deployment manifest
+          command: |
+            BUILD_DATE=$(date '+%Y%m%d%H%M%S')
+            cat eks-deployment/eks-cluster-creation.yaml.template |\
+               sed "s|DOCKER_IMAGE_NAME|<< parameters.docker-image-name >>|\
+                g;s|BUILD_DATE_VALUE|$BUILD_DATE|g;s|VERSION_INFO_VALUE|\
+                << parameters.version-info >>|g" > eks-deployment/eks-cluster-creation.yaml
+      - aws-eks/update-kubeconfig-with-authenticator:
+          cluster-name: << parameters.cluster-name >>
+          install-kubectl: true
+          aws-region: << parameters.aws-region >>
+      - kubernetes/create-or-update-resource:
+          resource-file-path: "eks-deployment/eks-cluster-creation.yaml"
+          get-rollout-status: true
+          resource-name: deployment/udacity-capstone-nginx 
+          
 #   test-application:
 #     executor: aws-eks/python3
 #     parameters:
