@@ -27,7 +27,11 @@ parameters:
     description: |
       AWS region
     default: ""
-
+  AWS_ECR_URL:
+    type: string
+    description: |
+      AWS ECR Repo
+    default: ""
 
 workflows:
   deployment:
@@ -39,8 +43,7 @@ workflows:
           repo: udacity-capstone-app-deployment
           dockerfile: ~/project/nginx_app/Dockerfile
           path: ~/project/nginx_app
-          tag: ${CIRCLE_SHA1}
-          create-repo: true
+          tag: ${CIRCLE_SHA1:0:7}
 
 #       - aws-eks/create-cluster:
 #           cluster-name: eks-orb-demo-app-deployment
@@ -50,15 +53,15 @@ workflows:
 #       - deploy-application:
 #           cluster-name: eks-orb-demo-app-deployment
 #           aws-region: $AWS_DEFAULT_REGION
-#           docker-image-name: "${AWS_ECR_URL}/eks_orb_demo_app:${CIRCLE_SHA1}"
-#           version-info: "${CIRCLE_SHA1}"
+#           docker-image-name: "${AWS_ECR_URL}/eks_orb_demo_app:${CIRCLE_SHA1:0:7}"
+#           version-info: "${CIRCLE_SHA1:0:7}"
 #           requires:
 #             - aws-eks/create-cluster
 #       - test-application:
 #           name: test-application
 #           cluster-name: eks-orb-demo-app-deployment
 #           aws-region: $AWS_DEFAULT_REGION
-#           expected-version-info: "${CIRCLE_SHA1}"
+#           expected-version-info: "${CIRCLE_SHA1:0:7}"
 #           requires:
 #             - deploy-application
 #       - undeploy-application:
