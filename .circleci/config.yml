@@ -6,33 +6,6 @@ orbs:
   kubernetes: circleci/kubernetes@0.3.0
 
 
-parameters:
-  cluster_name:
-    type: string
-    description: |
-      Name of the EKS cluster
-    default: ""
-  docker_image_name:
-    type: string
-    description: |
-      Name of the docker image to be deployed
-    default: ""
-  version_info:
-    type: string
-    description: |
-      App version information
-    default: ""
-  AWS_DEFAULT_REGION:
-    type: string
-    description: |
-      AWS region
-    default: ""
-  AWS_ECR_URL:
-    type: string
-    description: |
-      AWS ECR Repo
-    default: ""
-
 workflows:
   deployment:
     jobs:
@@ -54,7 +27,7 @@ workflows:
           requires:
             - build-and-push-image
 
-      - deploy-application:
+      - deploy-application:   
           cluster-name: cluster_name
           aws-region: AWS_DEFAULT_REGION
           docker-image-name: "${AWS_ECR_URL}/${docker_image-name}:${CIRCLE_SHA1:0:7}"
@@ -110,6 +83,33 @@ jobs:
 
   deploy-application:
     executor: aws-eks/python3
+    parameters:
+      cluster_name:
+        type: string
+        description: |
+          Name of the EKS cluster
+        default: ""
+      docker_image_name:
+        type: string
+        description: |
+          Name of the docker image to be deployed
+        default: ""
+      version_info:
+        type: string
+        description: |
+          App version information
+        default: ""
+      AWS_DEFAULT_REGION:
+        type: string
+        description: |
+          AWS region
+        default: ""
+      AWS_ECR_URL:
+        type: string
+        description: |
+          AWS ECR Repo
+        default: ""
+
     steps:
       - checkout
       - run:
