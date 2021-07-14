@@ -20,9 +20,9 @@ workflows:
           tag: ${CIRCLE_SHA1:0:7}
           requires:
             - check-docker-code
-      # - create-kubernetes-cluster:
-      #     requires:
-      #       - aws-ecr/build_and_push_image
+      - create-kubernetes-cluster:
+          requires:
+            - aws-ecr/build_and_push_image
 
  
 jobs:
@@ -33,7 +33,7 @@ jobs:
       steps:
       - checkout
       - run:
-          name: install hadolint
+          name: Installing Linters
           command: |
             cd nginx_app
             make install
@@ -48,23 +48,29 @@ jobs:
             else
               echo "failed to lint files - please fix and try again"
             fi
-    # create-kubernetes-cluster:
-    #   docker:
-    #     - image: alpine/k8s:1.15.12
-    #   working_directory: /tmp/workspace
-    #   steps:
-    #     - checkout
-    #     # - run:
-    #     #     name: store old cluster name
-    #     #     command: |
-    #     #       echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster.txt
-    #     #       cat cluster.txt
+    create-kubernetes-cluster:
+      docker:
+        - image: alpine/k8s:1.15.12
+      working_directory: /tmp/workspace
+      steps:
+        - checkout
+        # - run:
+        #     name: store old cluster name
+        #     command: |
+        #       echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster.txt
+        #       cat cluster.txt
 
-    #     - run:
-    #         name: create kubernetes cluster
-    #         command: |
-    #           # using cli to be able to specify unique name for cluster
-    #           eksctl create cluster --name="udacity-capstone-${$CIRCLE_SHA1:0:7}" \
-    #           --nodes-min=6 --nodes-max=8 \
-    #           --node-type=t3.medium
- 
+        - run:
+            name: create kubernetes cluster
+            command: |
+              eksctl create cluster --name="udacity-capstone-${CIRCLE_SHA1:0:7}" \
+              --region eu-west-1 \
+              --with-oidc \
+              --ssh-access \
+              --ssh-public-key poppy-key 
+       - run:
+          name: create kubernetes resources
+          command: |
+            aws eks update-kubeconfig --name "capstone-${CIRCLE_SHA1:0:7}"
+            export KUBECONFIG=/root/.kube/config
+            kubectl apply -f deployment/nginx-app-deployment-template.yml            

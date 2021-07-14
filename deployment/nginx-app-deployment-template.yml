@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-web-app
+  labels:
+    app: nginx-web
+spec:
+  selector:
+    matchLabels:
+      app: nginx-web
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nginx-web
+    spec:
+      containers:
+      - name: nginx-web-app
+        image: udacity-capstone-app-deployment
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 8080
