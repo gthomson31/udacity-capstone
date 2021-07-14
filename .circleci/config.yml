@@ -36,6 +36,7 @@ parameters:
 workflows:
   deployment:
     jobs:
+      - check-docker-code
       - aws-ecr/build_and_push_image:
           name: build-and-push-image
           account-url: AWS_ECR_URL
@@ -44,6 +45,8 @@ workflows:
           dockerfile: ~/project/nginx_app/Dockerfile
           path: ~/project/nginx_app
           tag: ${CIRCLE_SHA1:0:7}
+          requires:
+            - check-docker-code
 
 #       - aws-eks/create-cluster:
 #           cluster-name: eks-orb-demo-app-deployment
@@ -78,7 +81,22 @@ workflows:
 
 
 
-# jobs:
+jobs:
+    check-docker-code:
+    docker:
+      - image: python:3.7.3-stretch
+        working_directory: ~/project/nginx_app
+    steps:
+    - checkout
+      - run:
+          name: install hadolint
+          command: |
+            pwd
+            make install
+      - run:
+          name: run lint on Dockerfile
+          command: |
+            make lint
 #   deploy-application:
 #     executor: aws-eks/python3
 #     steps:
