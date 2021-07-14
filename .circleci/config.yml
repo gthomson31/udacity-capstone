@@ -96,6 +96,7 @@ jobs:
       - run:
           name: run lint on Dockerfile
           command: |
+            cd nginx_app          
             make lint
 #   deploy-application:
 #     executor: aws-eks/python3
