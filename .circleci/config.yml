@@ -91,7 +91,7 @@ jobs:
       - run:
           name: install hadolint
           command: |
-            pwd
+            pwd && ls -la
             make install
       - run:
           name: run lint on Dockerfile
