@@ -12,11 +12,4 @@ lint:
 	# This is linter for Dockerfiles
 	./hadolint Dockerfile
 
-	RESULT=$?
-	if [ ${RESULT} -eq 0 ]; then
-		echo "successfully linted dockerfile - proceeding to build image"
-	else
-		echo "failed to lint dockerfile - please fix and try again"
-	fi
-
 all: install lint 
