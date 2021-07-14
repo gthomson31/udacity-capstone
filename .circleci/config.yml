@@ -7,19 +7,22 @@ orbs:
 
 
 parameters:
-  cluster-name:
+  cluster_name:
     type: string
     description: |
       Name of the EKS cluster
-  docker-image-name:
+    default: ""
+  docker_image-name:
     type: string
     description: |
       Name of the docker image to be deployed
-  version-info:
+    default: ""
+  version_info:
     type: string
     description: |
       App version information
-  aws-region:
+    default: ""
+  AWS_DEFAULT_REGION:
     type: string
     description: |
       AWS region
