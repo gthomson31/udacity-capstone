@@ -44,7 +44,7 @@ workflows:
           repo: udacity-capstone-app-deployment
           dockerfile: ~/project/nginx_app/Dockerfile
           path: ~/project/nginx_app
-          tag: docker_image_name:${CIRCLE_SHA1:0:7}
+          tag: ${docker_image_name}:${CIRCLE_SHA1:0:7}
           requires:
             - check-docker-code
 
