@@ -22,7 +22,7 @@ workflows:
             - check-docker-code
       - create-kubernetes-cluster:
           requires:
-            - aws-ecr/build-and-push-image 
+            - build-and-push-image 
 
  
 jobs:
@@ -69,8 +69,8 @@ jobs:
               --ssh-access \
               --ssh-public-key poppy-key 
         - run:
-          name: create kubernetes resources
-          command: |
-            aws eks update-kubeconfig --name "capstone-${CIRCLE_SHA1:0:7}"
-            export KUBECONFIG=/root/.kube/config
-            kubectl apply -f deployment/nginx-app-deployment-template.yml            
+            name: create kubernetes resources
+            command: |
+              aws eks update-kubeconfig --name "capstone-${CIRCLE_SHA1:0:7}"
+              export KUBECONFIG=/root/.kube/config
+              kubectl apply -f deployment/nginx-app-deployment-template.yml            
