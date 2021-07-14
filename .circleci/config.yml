@@ -22,15 +22,16 @@ workflows:
             - check-docker-code
 
       - aws-eks/create-cluster:
-          cluster-name: cluster_name
+          cluster-name: eks_cluster_name 
           aws-region: AWS_DEFAULT_REGION
           requires:
             - build-and-push-image
 
-      - deploy-application:   
-          cluster-name: cluster_name
-          docker-image-name: "${AWS_ECR_URL}/${docker_image_name}:${CIRCLE_SHA1:0:7}"
-          version-info: "${CIRCLE_SHA1:0:7}"
+      - deploy-application:
+          cluster-name: eks_cluster_name
+          aws-region: $AWS_DEFAULT_REGION
+          docker-image-name: "${AWS_ECR_URL}/udacity-capstone-app-deployment:${CIRCLE_SHA1}"
+          version-info: "${CIRCLE_SHA1}"
           requires:
             - aws-eks/create-cluster
 
@@ -108,7 +109,6 @@ jobs:
           description: |
             AWS ECR Repo
           default: ""
-
       steps:
         - checkout
         - run:
