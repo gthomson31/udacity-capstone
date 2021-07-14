@@ -9,3 +9,4 @@ COPY hello.conf /etc/nginx/conf.d/
 
 #Step 4  Add index file for website
 COPY index.html /usr/share/nginx/html/
+nkfsdndfkjdgfkd
