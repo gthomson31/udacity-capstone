@@ -83,11 +83,11 @@ workflows:
 
 jobs:
     check-docker-code:
-    docker:
+      docker:
       - image: python:3.7.3-stretch
-        working_directory: ~/project/nginx_app
-    steps:
-    - checkout
+      working_directory: ~/project/nginx_app
+      steps:
+      - checkout
       - run:
           name: install hadolint
           command: |
