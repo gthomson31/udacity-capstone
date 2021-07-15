@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-web-app
+  name: nginx-web
   labels:
     app: nginx-web
 spec:
   selector:
     matchLabels:
       app: nginx-web
-  replicas: 3
+  replicas: 2
   template:
     metadata:
       labels:
         app: nginx-web
     spec:
       containers:
-      - name: nginx-web-app
-        image: udacity-capstone-app-deployment
+      - name: nginx-web
+        image: 908905824345.dkr.ecr.eu-west-1.amazonaws.com/udacity-capstone-app-deployment:latest
         resources:
           requests:
             cpu: 100m
