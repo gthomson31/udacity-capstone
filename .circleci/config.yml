@@ -73,4 +73,12 @@ jobs:
           command: |
             aws eks update-kubeconfig --name "capstone-${CIRCLE_SHA1:0:7}"
             export KUBECONFIG=/root/.kube/config
-            kubectl apply -f deployment/nginx-app-deployment-template.yml            
+            kubectl get svc
+            kubectl apply -f deployment/
+            kubectl rollout status deployment nginx-web
+
+      - run:
+          name: add backend service ip to a file
+          command: |
+            echo "$(kubectl get services nginx-web-service --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')" > service.txt
+            cat service.txt
