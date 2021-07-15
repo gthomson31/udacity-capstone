@@ -1,10 +1,8 @@
 version: 2.1
 
 orbs:
-  aws-eks: circleci/aws-eks@0.2.0
   aws-ecr: circleci/aws-ecr@3.1.0
-  kubernetes: circleci/kubernetes@0.3.0
-
+  docker: circleci/docker@x.y.z
 
 workflows:
   deployment:
@@ -20,9 +18,15 @@ workflows:
           tag: ${CIRCLE_SHA1:0:7}
           requires:
             - check-docker-code
-      - create-kubernetes-cluster:
+      - docker/publish:
+          image: $DOCKER_LOGIN/udacity-capstone-app-deployment
+          path: ~/project/nginx_app
+          update-description: true
           requires:
-            - build-and-push-image 
+            - check-docker-code
+      # - create-kubernetes-cluster:
+      #     requires:
+      #       - build-and-push-image 
 
  
 jobs:
@@ -82,3 +86,4 @@ jobs:
             command: |
               echo "$(kubectl get services nginx-web-service --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')" > service.txt
               cat service.txt
+

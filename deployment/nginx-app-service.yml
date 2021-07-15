@@ -1,14 +1,14 @@
-
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-web-service
+  name: nginx-web-app-service
+  labels:
+    name: nginx-web-app
 spec:
   selector:
-    app: nginx-web
-  type: LoadBalancer
+    app: nginx-web-app
   ports:
     - name: http
-      port: 8080
+      port: 80
       nodePort: 30000
       protocol: TCP
