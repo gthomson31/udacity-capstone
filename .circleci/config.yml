@@ -19,6 +19,7 @@ workflows:
           requires:
             - check-docker-code
       - docker/publish:
+          attach-at: ~/project/nginx_app
           image: $DOCKER_LOGIN/udacity-capstone-app-deployment
           path: ~/project/nginx_app
           update-description: true

@@ -5,10 +5,10 @@ FROM nginx:mainline-alpine
 RUN rm /etc/nginx/conf.d/*
 
 #Step 3  Add configuration
-COPY ~/project/nginx_app/hello.conf /etc/nginx/conf.d/
+COPY hello.conf /etc/nginx/conf.d/
 
 #Step 4  Add index file for website
-COPY ~/project/nginx_app/index.html /usr/share/nginx/html/
+COPY index.html /usr/share/nginx/html/
 
 ## Step 5:
 # Expose port 80
