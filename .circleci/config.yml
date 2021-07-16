@@ -62,32 +62,38 @@ jobs:
               echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster.txt
               cat cluster.txt
 
-        - run:
-            name: create kubernetes cluster
-            command: |
-              eksctl create cluster --name="udacity-capstone-${CIRCLE_SHA1:0:7}" \
-              --region eu-west-1 \
-              --with-oidc \
-              --ssh-access \
-              --ssh-public-key poppy-key 
+        # - run:
+        #     name: create kubernetes cluster
+        #     command: |
+        #       eksctl create cluster --name="udacity-capstone-${CIRCLE_SHA1:0:7}" \
+        #       --region eu-west-1 \
+        #       --with-oidc \
+        #       --ssh-access \
+        #       --ssh-public-key poppy-key 
         - run:
             name: store current cluster name
             command: |
               echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > ~/cluster.txt
+              cd ~
+              pwd
+              ls -la 
               cat ~/cluster.txt
-        - run:
-            name: create kubernetes resources
-            command: |
-              aws eks update-kubeconfig --name "udacity-capstone-${CIRCLE_SHA1:0:7}"
-              export KUBECONFIG=/root/.kube/config
-              kubectl get svc
-              kubectl apply -f deployment/
-              kubectl rollout status deployment nginx-web-app
+        # - run:
+        #     name: Deploy Application on Kubernetes
+        #     command: |
+        #       aws eks update-kubeconfig --name "udacity-capstone-${CIRCLE_SHA1:0:7}"
+        #       export KUBECONFIG=/root/.kube/config
+        #       kubectl get svc
+        #       kubectl apply -f deployment/
+        #       kubectl rollout status deployment nginx-web-app
 
         - run:
             name: add backend service ip to a file
             command: |
               echo "$(kubectl get services nginx-web-app-service --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')" > ~/service.txt
+              cd ~
+              pwd
+              ls -la 
               cat ~/service.txt
 
         - persist_to_workspace:
@@ -102,7 +108,7 @@ jobs:
         steps:
           - checkout
           - attach_workspace:
-              at: ~/
+              at: /tmp/workspace
           - run:
               name: Install dependencies
               command: |
@@ -110,7 +116,8 @@ jobs:
           - run:
               name: smoke test
               command: |
-
+                pwd
+                ls -la
                 export URL=$(cat service.txt)"15444/hello"
 
                 if curl -s ${URL} | grep "Hello World"
