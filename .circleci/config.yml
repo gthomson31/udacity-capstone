@@ -21,10 +21,12 @@ workflows:
       - docker/publish:
           image: $DOCKER_LOGIN/udacity-capstone-app-deployment
           path: ~/project/nginx_app
-          workspace-root: ~/project/nginx_app
           update-description: true
+          docker-context: ~/project/nginx_app
           requires:
             - check-docker-code
+
+
       # - create-kubernetes-cluster:
       #     requires:
       #       - build-and-push-image 
@@ -53,6 +55,22 @@ jobs:
             else
               echo "failed to lint files - please fix and try again"
             fi
+    push-to-dockerhub:
+      docker:
+      - image: python:3.7.3-stretch
+      working_directory: ~/project/
+      steps:
+      - checkout
+      - run:
+          name: Installing Linters
+          command: |
+            cd nginx_app
+            make install
+      - run:
+          name: run lint on Dockerfile
+          command: |
+
+
     create-kubernetes-cluster:
       docker:
         - image: alpine/k8s:1.15.12
