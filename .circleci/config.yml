@@ -96,32 +96,32 @@ jobs:
               - project/cluster.txt
               - project/service.txt
 
-  smoke-test:
-      docker:
-        - image: python:3.7-alpine3.11
-      steps:
-        - checkout
-        - attach_workspace:
-            at: ~/
-        - run:
-            name: Install dependencies
-            command: |
-              apk add --update curl
-        - run:
-            name: smoke test
-            command: |
+    smoke-test:
+        docker:
+          - image: python:3.7-alpine3.11
+        steps:
+          - checkout
+          - attach_workspace:
+              at: ~/
+          - run:
+              name: Install dependencies
+              command: |
+                apk add --update curl
+          - run:
+              name: smoke test
+              command: |
 
-              export URL=$(cat project/service.txt)"15444/hello"
+                export URL=$(cat project/service.txt)"15444/hello"
 
-              if curl -s ${URL} | grep "Hello World"
-              then
-                echo "Smoke Test Success"
-                return 0  
-              else
-                echo "Unable to access Website"
-                return 1
-              fi
-        
+                if curl -s ${URL} | grep "Hello World"
+                then
+                  echo "Smoke Test Success"
+                  return 0  
+                else
+                  echo "Unable to access Website"
+                  return 1
+                fi
+          
 #         - destroy-environment
 
 
