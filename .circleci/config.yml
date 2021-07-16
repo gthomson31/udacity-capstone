@@ -97,7 +97,7 @@ jobs:
               cat ~/service.txt
 
         - persist_to_workspace:
-            root: ~/
+            root: ~/project/
             paths:
               - cluster.txt
               - service.txt
