@@ -9,6 +9,6 @@ spec:
     app: nginx-web-app
   ports:
     - name: http
-      port: 80
-      nodePort: 30000
-      protocol: TCP
+      port: 15444
+      targetPort: 80
+  type: LoadBalancer
