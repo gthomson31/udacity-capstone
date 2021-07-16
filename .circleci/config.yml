@@ -73,6 +73,8 @@ jobs:
         - run:
             name: store current cluster name
             command: |
+              ls -la
+              pwd
               echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > ~/cluster.txt
               cd ~
               pwd
@@ -97,7 +99,7 @@ jobs:
               cat ~/service.txt
 
         - persist_to_workspace:
-            root: ~/project/
+            root: ~/
             paths:
               - cluster.txt
               - service.txt
