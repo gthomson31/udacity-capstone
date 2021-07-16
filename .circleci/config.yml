@@ -111,7 +111,7 @@ jobs:
               name: smoke test
               command: |
 
-                export URL=$(cat project/service.txt)"15444/hello"
+                export URL=$(cat service.txt)"15444/hello"
 
                 if curl -s ${URL} | grep "Hello World"
                 then
