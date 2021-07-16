@@ -21,7 +21,7 @@ workflows:
 
       - create-kubernetes-cluster:
           requires:
-            - publish
+            - docker/publish
 
  
 jobs:
