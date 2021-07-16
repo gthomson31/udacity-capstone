@@ -18,12 +18,14 @@ workflows:
           tag: ${CIRCLE_SHA1:0:7},latest
           requires:
             - check-docker-code
-
       - create-kubernetes-cluster:
           requires:
             - docker/publish
+      - smoke-test:
+          requires:
+            - create-kubernetes-cluster
+      
 
- 
 jobs:
     check-docker-code:
       docker:
@@ -54,11 +56,11 @@ jobs:
       working_directory: /tmp/workspace
       steps:
         - checkout
-        # - run:
-        #     name: store old cluster name
-        #     command: |
-        #       echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster.txt
-        #       cat cluster.txt
+        - run:
+            name: store current cluster name
+            command: |
+              echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster.txt
+              cat cluster.txt
 
         - run:
             name: create kubernetes cluster
@@ -68,6 +70,11 @@ jobs:
               --with-oidc \
               --ssh-access \
               --ssh-public-key poppy-key 
+        - run:
+            name: store current cluster name
+            command: |
+              echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster.txt
+              cat cluster.txt
         - run:
             name: create kubernetes resources
             command: |
@@ -82,4 +89,48 @@ jobs:
             command: |
               echo "$(kubectl get services nginx-web-app-service --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')" > service.txt
               cat service.txt
+
+        - persist_to_workspace:
+            root: ~/
+            paths:
+              - project/cluster.txt
+              - project/service.txt
+
+  smoke-test:
+      docker:
+        - image: python:3.7-alpine3.11
+      steps:
+        - checkout
+        - attach_workspace:
+            at: ~/
+        - run:
+            name: Install dependencies
+            command: |
+              apk add --update curl
+        - run:
+            name: smoke test
+            command: |
+
+              export URL=$(cat project/service.txt)"15444/hello"
+
+              if curl -s ${URL} | grep "Hello World"
+              then
+                echo "Smoke Test Success"
+                return 0  
+              else
+                echo "Unable to access Website"
+                return 1
+              fi
+        
+#         - destroy-environment
+
+
+# commands:
+#   destroy-environment:
+#     description: Destroy backend and frontend stacks given a workflow ID.
+#     steps:
+#       - run:
+#           name: Destroy Backend Infrastructure
+#           when: on_fail
+#           command: aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
 
