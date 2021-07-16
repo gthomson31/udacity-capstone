@@ -59,7 +59,7 @@ jobs:
         - run:
             name: store current cluster name
             command: |
-              echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster.txt
+              echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster-old.txt
               cat cluster-old.txt
 
         # - run:
@@ -73,7 +73,7 @@ jobs:
         - run:
             name: store current cluster name
             command: |
-              echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster.txt
+              echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster-new.txt
               pwd
               ls -la 
               cat cluster-new.txt
