@@ -90,7 +90,6 @@ jobs:
             name: add backend service ip to a file
             command: |
               echo "$(kubectl get services nginx-web-app-service --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')" > service.txt
-              cd ~
               pwd
               ls -la 
               cat service.txt
