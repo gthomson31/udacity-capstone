@@ -60,7 +60,7 @@ jobs:
             name: store current cluster name
             command: |
               echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster.txt
-              cat cluster.txt
+              cat cluster-old.txt
 
         # - run:
         #     name: create kubernetes cluster
@@ -76,7 +76,7 @@ jobs:
               echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster.txt
               pwd
               ls -la 
-              cat cluster.txt
+              cat cluster-new.txt
         # - run:
         #     name: Deploy Application on Kubernetes
         #     command: |
@@ -93,12 +93,13 @@ jobs:
               cd ~
               pwd
               ls -la 
-              cat ~/service.txt
+              cat service.txt
 
         - persist_to_workspace:
             root: ~/
             paths:
-              - cluster.txt
+              - cluster-new.txt
+              - cluster-old.txt
               - service.txt
 
     smoke-test:
