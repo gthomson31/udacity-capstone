@@ -93,8 +93,8 @@ jobs:
         - persist_to_workspace:
             root: ~/
             paths:
-              - ~/cluster.txt
-              - ~/service.txt
+              - cluster.txt
+              - service.txt
 
     smoke-test:
         docker:
