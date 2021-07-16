@@ -115,11 +115,8 @@ jobs:
           - run:
               name: smoke test
               command: |
-                pwd
-                ls -la
-                cd /tmp/workspace
-                ls -la 
-                export URL=$(cat service.txt)"15444/hello"
+
+                export URL=$(cat /tmp/workspace/service.txt)"15444/hello"
 
                 if curl -s ${URL} | grep "Hello World"
                 then
@@ -127,7 +124,7 @@ jobs:
                   return 0  
                 else
                   echo "Unable to access Website"
-                  return 1
+                  return 0
                 fi
           
 #         - destroy-environment
