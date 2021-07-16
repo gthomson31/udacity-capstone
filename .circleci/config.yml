@@ -73,11 +73,10 @@ jobs:
         - run:
             name: store current cluster name
             command: |
-              echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > ~/cluster.txt
-              cd ~
+              echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster.txt
               pwd
               ls -la 
-              cat ~/cluster.txt
+              cat cluster.txt
         # - run:
         #     name: Deploy Application on Kubernetes
         #     command: |
@@ -90,7 +89,7 @@ jobs:
         - run:
             name: add backend service ip to a file
             command: |
-              echo "$(kubectl get services nginx-web-app-service --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')" > ~/service.txt
+              echo "$(kubectl get services nginx-web-app-service --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')" > service.txt
               cd ~
               pwd
               ls -la 
