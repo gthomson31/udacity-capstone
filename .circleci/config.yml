@@ -95,7 +95,7 @@ jobs:
               cat service.txt
 
         - persist_to_workspace:
-            root: ~/
+            root: /tmp/workspace
             paths:
               - cluster-new.txt
               - cluster-old.txt
