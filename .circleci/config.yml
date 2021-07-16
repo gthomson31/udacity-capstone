@@ -19,9 +19,9 @@ workflows:
           requires:
             - check-docker-code
 
-      # - create-kubernetes-cluster:
-      #     requires:
-      #       - build-and-push-image 
+      - create-kubernetes-cluster:
+          requires:
+            - publish
 
  
 jobs:
@@ -75,11 +75,11 @@ jobs:
               export KUBECONFIG=/root/.kube/config
               kubectl get svc
               kubectl apply -f deployment/
-              kubectl rollout status deployment nginx-web
+              kubectl rollout status deployment nginx-web-app
 
         - run:
             name: add backend service ip to a file
             command: |
-              echo "$(kubectl get services nginx-web-service --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')" > service.txt
+              echo "$(kubectl get services nginx-web-app-service --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')" > service.txt
               cat service.txt
 
