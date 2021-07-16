@@ -73,8 +73,8 @@ jobs:
         - run:
             name: store current cluster name
             command: |
-              echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster.txt
-              cat cluster.txt
+              echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > ~/cluster.txt
+              cat ~/cluster.txt
         - run:
             name: create kubernetes resources
             command: |
@@ -87,14 +87,14 @@ jobs:
         - run:
             name: add backend service ip to a file
             command: |
-              echo "$(kubectl get services nginx-web-app-service --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')" > service.txt
-              cat service.txt
+              echo "$(kubectl get services nginx-web-app-service --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')" > ~/service.txt
+              cat ~/service.txt
 
         - persist_to_workspace:
             root: ~/
             paths:
-              - project/cluster.txt
-              - project/service.txt
+              - ~/cluster.txt
+              - ~/service.txt
 
     smoke-test:
         docker:
