@@ -15,7 +15,7 @@ workflows:
           path: ~/project/nginx_app
           update-description: true
           docker-context: ~/project/nginx_app
-          tag: ${CIRCLE_SHA1:0:7}
+          tag: ${CIRCLE_SHA1:0:7}, latest
           requires:
             - check-docker-code
 
