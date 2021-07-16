@@ -117,6 +117,8 @@ jobs:
               command: |
                 pwd
                 ls -la
+                cd /tmp/workspace
+                ls -la 
                 export URL=$(cat service.txt)"15444/hello"
 
                 if curl -s ${URL} | grep "Hello World"
