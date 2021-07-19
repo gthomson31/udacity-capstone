@@ -36,9 +36,9 @@ workflows:
       - smoke-test:
           requires:
             - create-kubernetes-cluster
-      - delete-previous-deployment:
-          requires:
-            - smoke-test
+      # - delete-previous-deployment:
+      #     requires:
+      #       - smoke-test
       
 jobs:
     check-docker-code:
