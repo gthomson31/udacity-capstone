@@ -36,9 +36,9 @@ workflows:
       - smoke-test:
           requires:
             - create-kubernetes-cluster
-      # - delete-previous-deployment:
-      #     requires:
-      #       - smoke-test
+      - delete-previous-deployment:
+          requires:
+            - smoke-test
       
 jobs:
     check-docker-code:
@@ -128,6 +128,9 @@ jobs:
 
               export URL="http://"$(cat /tmp/workspace/service.txt)":15444"
               echo $URL
+              
+              # Allow time for the LB to come online and start serving traffic
+              sleep 30
 
               if curl ${URL} | grep "Hello World"
               then
@@ -146,6 +149,8 @@ jobs:
       working_directory: /tmp/workspace
       steps:
         - checkout
+        - attach_workspace:
+            at: /tmp/workspace
         - run:
             name: delete previous app deployment
             command: |
