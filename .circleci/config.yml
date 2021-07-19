@@ -1,9 +1,6 @@
 version: 2.1
 
 orbs:
-  aws-eks: circleci/aws-eks@0.2.0
-  aws-ecr: circleci/aws-ecr@3.1.0
-  kubernetes: circleci/kubernetes@0.3.0
   docker: circleci/docker@1.6.0
 
 workflows:
@@ -24,8 +21,10 @@ workflows:
       - smoke-test:
           requires:
             - create-kubernetes-cluster
+      - delete-previous-deployment:
+          requires:
+            - smoke-test
       
-
 jobs:
     check-docker-code:
       docker:
@@ -114,7 +113,8 @@ jobs:
               name: smoke test
               command: |
 
-                export URL=$(cat /tmp/workspace/service.txt)"15444/hello"
+                export URL=$(cat /tmp/workspace/service.txt)":15444/hello"
+                echo $URL
 
                 if curl -s ${URL} | grep "Hello World"
                 then
