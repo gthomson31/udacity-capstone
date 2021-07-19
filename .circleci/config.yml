@@ -130,7 +130,7 @@ jobs:
               echo $URL
               
               # Allow time for the LB to come online and start serving traffic
-              sleep 120
+              # sleep 120
 
               if curl ${URL} | grep "Hello World"
               then
