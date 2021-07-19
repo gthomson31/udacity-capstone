@@ -91,7 +91,7 @@ jobs:
         - run:
             name: Deploy Application on Kubernetes
             command: |
-              aws eks update-kubeconfig --name "udacity-capstone-${CIRCLE_SHA1:0:7}"
+              aws eks update-kubeconfig --name "udacity-capstone-ce1fee5"
               export KUBECONFIG=/root/.kube/config
               kubectl get svc
               kubectl apply -f deployment/
