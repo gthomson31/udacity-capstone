@@ -161,7 +161,7 @@ jobs:
                     echo $OLD_CLUSTER " : There is no old cluster found to be deleted"
               else
                     echo $OLD_CLUSTER " : Found old cluster found to be deleted"
-                    aws eks update-kubeconfig --name="${OLD_CLLUSTER}"
+                    aws eks update-kubeconfig --name="${OLD_CLUSTER}"
                     export KUBECONFIG=/root/.kube/config
                     kubectl get svc
                     kubectl delete -f deployment/
