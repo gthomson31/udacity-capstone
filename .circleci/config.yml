@@ -78,7 +78,8 @@ jobs:
         - run:
             name: create new kubernetes cluster
             command: |
-              eksctl create cluster -f deployment/cluster.yml --name="udacity-capstone-${CIRCLE_SHA1:0:7}" 
+              ed -i 's/basic-cluster/udacity-capstone-${CIRCLE_SHA1:0:7}/g' deployment/cluster.yml
+              eksctl create cluster -f deployment/cluster.yml
               # --region eu-west-1 \
               # --with-oidc \
               # --ssh-access \
