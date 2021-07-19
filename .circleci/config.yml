@@ -15,7 +15,7 @@ commands:
             export KUBECONFIG=/root/.kube/config
             kubectl get svc
             kubectl delete -f deployment/
-            eksctl delete cluster --name="udacity-capstone-${CIRCLE_SHA1:0:7}" 
+            eksctl delete cluster udacity-capstone-${CIRCLE_SHA1:0:7}
 
 
 workflows:
@@ -131,7 +131,7 @@ jobs:
 
               if curl ${URL} | grep "Hello World"
               then
-                echo "Smoke Test Success"
+                echo "Smoke Test Success - Website able to be reached"
                 return 0  
               else
                 echo "Unable to access Website"
@@ -155,7 +155,7 @@ jobs:
                     echo "\$OLD_CLUSTER : There is no old cluster found to be deleted"
               else
                     echo "\$OLD_CLUSTER : Found old cluster found to be deleted"
-                    aws eks update-kubeconfig --name=${OLD_CLLUSTER}
+                    aws eks update-kubeconfig --name="${OLD_CLLUSTER}"
                     export KUBECONFIG=/root/.kube/config
                     kubectl get svc
                     kubectl delete -f deployment/
@@ -170,7 +170,7 @@ jobs:
               
               else
                     echo "\$OLD_CLUSTER : Found old cluster found to be deleted"
-                    eksctl delete cluster --name={$OLD_CLUSTER} 
+                    eksctl delete cluster $OLD_CLUSTER
               fi
 
 
