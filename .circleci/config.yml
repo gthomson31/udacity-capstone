@@ -61,33 +61,31 @@ jobs:
             command: |
               echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster-old.txt
               cat cluster-old.txt
-
-        # - run:
-        #     name: create kubernetes cluster
-        #     command: |
-        #       eksctl create cluster --name="udacity-capstone-${CIRCLE_SHA1:0:7}" \
-        #       --region eu-west-1 \
-        #       --with-oidc \
-        #       --ssh-access \
-        #       --ssh-public-key poppy-key 
         - run:
-            name: store current cluster name
+            name: create new kubernetes cluster
+            command: |
+              eksctl create cluster --name="udacity-capstone-${CIRCLE_SHA1:0:7}" \
+              --region eu-west-1 \
+              --with-oidc \
+              --ssh-access \
+              --ssh-public-key poppy-key 
+        - run:
+            name: store new cluster name
             command: |
               echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster-new.txt
               pwd
               ls -la 
               cat cluster-new.txt
-        # - run:
-        #     name: Deploy Application on Kubernetes
-        #     command: |
-        #       aws eks update-kubeconfig --name "udacity-capstone-${CIRCLE_SHA1:0:7}"
-        #       export KUBECONFIG=/root/.kube/config
-        #       kubectl get svc
-        #       kubectl apply -f deployment/
-        #       kubectl rollout status deployment nginx-web-app
-
         - run:
-            name: add backend service ip to a file
+            name: Deploy Application on Kubernetes
+            command: |
+              aws eks update-kubeconfig --name "udacity-capstone-${CIRCLE_SHA1:0:7}"
+              export KUBECONFIG=/root/.kube/config
+              kubectl get svc
+              kubectl apply -f deployment/
+              kubectl rollout status deployment nginx-web-app
+        - run:
+            name: Add service ip to a file
             command: |
               echo "$(kubectl get services nginx-web-app-service --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')" > service.txt
               pwd
@@ -124,18 +122,40 @@ jobs:
                   return 0  
                 else
                   echo "Unable to access Website"
-                  return 0
+                  return 1
                 fi
-          
-#         - destroy-environment
 
-
-# commands:
-#   destroy-environment:
-#     description: Destroy backend and frontend stacks given a workflow ID.
-#     steps:
-#       - run:
-#           name: Destroy Backend Infrastructure
-#           when: on_fail
-#           command: aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
-
+    delete-previous-deployment:
+      docker:
+        - image: alpine/k8s:1.15.12
+      working_directory: /tmp/workspace
+      steps:
+        - checkout
+        - run:
+            name: Delete previous app deployment
+            command: |
+              OLD_CLUSTER=$(cat /tmp/workspace/cluster-old.txt)
+              if [ -z "$OLD_CLUSTER" ]
+              then
+                    echo "\$OLD_CLUSTER : There is no old cluster found to be deleted"
+              else
+                    echo "\$OLD_CLUSTER : Found old cluster found to be deleted"
+                    aws eks update-kubeconfig --name=${OLD_CLLUSTER}
+                    export KUBECONFIG=/root/.kube/config
+                    kubectl get svc
+                    kubectl delete -f deployment/
+              fi
+            name: Delete Old kubernetes cluster
+            command: |
+              OLD_CLUSTER=$(cat /tmp/workspace/cluster-old.txt)
+              if [ -z "$OLD_CLUSTER" ]
+              then
+                    echo "\$OLD_CLUSTER : There is no old cluster found to be deleted"
+              else
+                    echo "\$OLD_CLUSTER : Found old cluster found to be deleted"
+                    eksctl delete cluster --name={$OLD_CLUSTER} \
+                    --region eu-west-1 \
+                    --with-oidc \
+                    --ssh-access \
+                    --ssh-public-key poppy-key   
+              fi
