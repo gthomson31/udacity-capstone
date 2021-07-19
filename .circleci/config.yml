@@ -21,18 +21,18 @@ commands:
 workflows:
   deployment:
     jobs:
-      - check-docker-code
-      - docker/publish:
-          image: $DOCKER_LOGIN/udacity-capstone-app-deployment
-          path: ~/project/nginx_app
-          update-description: true
-          docker-context: ~/project/nginx_app
-          tag: ${CIRCLE_SHA1:0:7},latest
-          requires:
-            - check-docker-code
+      # - check-docker-code
+      # - docker/publish:
+      #     image: $DOCKER_LOGIN/udacity-capstone-app-deployment
+      #     path: ~/project/nginx_app
+      #     update-description: true
+      #     docker-context: ~/project/nginx_app
+      #     tag: ${CIRCLE_SHA1:0:7},latest
+      #     requires:
+      #       - check-docker-code
       - create-kubernetes-cluster:
-          requires:
-            - docker/publish
+          # requires:
+          #   - docker/publish
       - smoke-test:
           requires:
             - create-kubernetes-cluster
