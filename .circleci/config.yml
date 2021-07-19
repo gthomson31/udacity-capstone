@@ -21,18 +21,18 @@ commands:
 workflows:
   deployment:
     jobs:
-      - check-docker-code
-      - docker/publish:
-          image: $DOCKER_LOGIN/udacity-capstone-app-deployment
-          path: ~/project/nginx_app
-          update-description: true
-          docker-context: ~/project/nginx_app
-          tag: ${CIRCLE_SHA1:0:7},latest
-          requires:
-            - check-docker-code
-      - create-kubernetes-cluster:
-          requires:
-            - docker/publish
+      # - check-docker-code
+      # - docker/publish:
+      #     image: $DOCKER_LOGIN/udacity-capstone-app-deployment
+      #     path: ~/project/nginx_app
+      #     update-description: true
+      #     docker-context: ~/project/nginx_app
+      #     tag: ${CIRCLE_SHA1:0:7},latest
+      #     requires:
+      #       - check-docker-code
+      - create-kubernetes-cluster
+          # requires:
+          #   - docker/publish
       - smoke-test:
           requires:
             - create-kubernetes-cluster
@@ -75,27 +75,27 @@ jobs:
             command: |
               echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster-old.txt
               cat cluster-old.txt
-        - run:
-            name: create new kubernetes cluster
-            command: |
-              # Updating the cluster name in the Yaml 
-              sed -i "s/basic-cluster/udacity-capstone-${CIRCLE_SHA1:0:7}/g" cluster.yml
+        # - run:
+        #     name: create new kubernetes cluster
+        #     command: |
+        #       # Updating the cluster name in the Yaml 
+        #       sed -i "s/basic-cluster/udacity-capstone-${CIRCLE_SHA1:0:7}/g" cluster.yml
 
-              eksctl create cluster -f cluster.yml
+        #       eksctl create cluster -f cluster.yml
 
         - run:
             name: store new cluster name
             command: |
               echo "udacity-capstone-${CIRCLE_SHA1:0:7}" > cluster.txt
               cat cluster.txt
-        - run:
-            name: Deploy Application on Kubernetes
-            command: |
-              aws eks update-kubeconfig --name "udacity-capstone-${CIRCLE_SHA1:0:7}"
-              export KUBECONFIG=/root/.kube/config
-              kubectl get svc
-              kubectl apply -f deployment/
-              kubectl rollout status deployment nginx-web-app
+        # - run:
+        #     name: Deploy Application on Kubernetes
+        #     command: |
+        #       aws eks update-kubeconfig --name "udacity-capstone-${CIRCLE_SHA1:0:7}"
+        #       export KUBECONFIG=/root/.kube/config
+        #       kubectl get svc
+        #       kubectl apply -f deployment/
+        #       kubectl rollout status deployment nginx-web-app
         - run:
             name: Add service ip to a file
             command: |
@@ -130,7 +130,7 @@ jobs:
               echo $URL
               
               # Allow time for the LB to come online and start serving traffic
-              sleep 30
+              sleep 120
 
               if curl ${URL} | grep "Hello World"
               then
@@ -155,11 +155,12 @@ jobs:
             name: delete previous app deployment
             command: |
               OLD_CLUSTER=$(cat /tmp/workspace/cluster-old.txt)
+              echo $OLD_CLUSTER
               if [ -z "$OLD_CLUSTER" ]
               then
-                    echo "\$OLD_CLUSTER : There is no old cluster found to be deleted"
+                    echo $OLD_CLUSTER " : There is no old cluster found to be deleted"
               else
-                    echo "\$OLD_CLUSTER : Found old cluster found to be deleted"
+                    echo $OLD_CLUSTER " : Found old cluster found to be deleted"
                     aws eks update-kubeconfig --name="${OLD_CLLUSTER}"
                     export KUBECONFIG=/root/.kube/config
                     kubectl get svc
@@ -171,10 +172,10 @@ jobs:
               OLD_CLUSTER=$(cat /tmp/workspace/cluster-old.txt)
               if [ -z "$OLD_CLUSTER" ]
               then
-                    echo "\$OLD_CLUSTER : There is no old cluster found to be deleted"
+                    echo "$OLD_CLUSTER : There is no old cluster found to be deleted"
               
               else
-                    echo "\$OLD_CLUSTER : Found old cluster found to be deleted"
+                    echo $OLD_CLUSTER " : Found old cluster found to be deleted"
                     eksctl delete cluster $OLD_CLUSTER
               fi
 
