@@ -30,7 +30,7 @@ workflows:
           tag: ${CIRCLE_SHA1:0:7},latest
           requires:
             - check-docker-code
-      - create-kubernetes-cluster
+      - create-kubernetes-cluster:
           requires:
             - docker/publish
       - smoke-test:
