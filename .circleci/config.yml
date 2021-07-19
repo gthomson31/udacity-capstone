@@ -78,17 +78,15 @@ jobs:
         - run:
             name: create new kubernetes cluster
             command: |
-              eksctl create cluster --name="udacity-capstone-${CIRCLE_SHA1:0:7}" \
-              --region eu-west-1 \
-              --with-oidc \
-              --ssh-access \
-              --ssh-public-key poppy-key 
+              eksctl create cluster -f deployment/cluster.yaml --name="udacity-capstone-${CIRCLE_SHA1:0:7}" \
+              # --region eu-west-1 \
+              # --with-oidc \
+              # --ssh-access \
+              # --ssh-public-key poppy-key 
         - run:
             name: store new cluster name
             command: |
-              echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster-new.txt
-              pwd
-              ls -la 
+              echo "udacity-capstone-${CIRCLE_SHA1:0:7}"" > cluster-new.txt
               cat cluster-new.txt
         - run:
             name: Deploy Application on Kubernetes
@@ -102,8 +100,6 @@ jobs:
             name: Add service ip to a file
             command: |
               echo "$(kubectl get services nginx-web-app-service --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')" > service.txt
-              pwd
-              ls -la 
               cat service.txt
 
         - persist_to_workspace:
@@ -133,7 +129,7 @@ jobs:
               export URL="http://"$(cat /tmp/workspace/service.txt)":15444"
               echo $URL
 
-              if curl -s ${URL} | grep "Hello World"
+              if curl ${URL} | grep "Hello World"
               then
                 echo "Smoke Test Success"
                 return 0  

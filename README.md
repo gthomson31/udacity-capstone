@@ -26,4 +26,3 @@ This repo carries out the following tasks :
 - [Amazon AWS](https://aws.amazon.com/) - Cloud services
 - [AWS CLI](https://aws.amazon.com/cli/) - Command-line tool for AWS
 - [CloudFormation](https://aws.amazon.com/cloudformation/) - Infrastrcuture as code
-- [Ansible](https://www.ansible.com/) - Configuration management tool
