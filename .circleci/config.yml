@@ -75,20 +75,19 @@ jobs:
             command: |
               echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster-old.txt
               cat cluster-old.txt
-        - run:
-            name: create new kubernetes cluster
-            command: |
-              sed -i "s/basic-cluster/udacity-capstone-${CIRCLE_SHA1:0:7}/g" deployment/cluster.yml
-              eksctl create cluster -f deployment/cluster.yml
-              # --region eu-west-1 \
-              # --with-oidc \
-              # --ssh-access \
-              # --ssh-public-key poppy-key 
-        - run:
-            name: store new cluster name
-            command: |
-              echo "udacity-capstone-${CIRCLE_SHA1:0:7}"" > cluster-new.txt
-              cat cluster-new.txt
+        # - run:
+        #     name: create new kubernetes cluster
+        #     command: |
+        #       # Updating the cluster name in the Yaml 
+        #       sed -i "s/basic-cluster/udacity-capstone-${CIRCLE_SHA1:0:7}/g" deployment/cluster.yml
+
+        #       eksctl create cluster -f deployment/cluster.yml
+
+        # - run:
+        #     name: store new cluster name
+        #     command: |
+        #       echo "udacity-capstone-${CIRCLE_SHA1:0:7}" > cluster-new.txt
+        #       cat cluster-new.txt
         - run:
             name: Deploy Application on Kubernetes
             command: |
