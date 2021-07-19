@@ -30,7 +30,7 @@ workflows:
           tag: ${CIRCLE_SHA1:0:7},latest
           requires:
             - check-docker-code
-      - create-kubernetes-cluster
+      - create-kubernetes-cluster:
           requires:
             - docker/publish
       - smoke-test:
@@ -81,13 +81,13 @@ jobs:
               # Updating the cluster name in the Yaml 
               sed -i "s/basic-cluster/udacity-capstone-${CIRCLE_SHA1:0:7}/g" cluster.yml
 
-              eksctl create cluster -f deployment/cluster.yml
+              eksctl create cluster -f cluster.yml
 
         - run:
             name: store new cluster name
             command: |
-              echo "udacity-capstone-${CIRCLE_SHA1:0:7}" > cluster-new.txt
-              cat cluster-new.txt
+              echo "udacity-capstone-${CIRCLE_SHA1:0:7}" > cluster.txt
+              cat cluster.txt
         - run:
             name: Deploy Application on Kubernetes
             command: |
@@ -105,7 +105,7 @@ jobs:
         - persist_to_workspace:
             root: /tmp/workspace
             paths:
-              - cluster-new.txt
+              - cluster.txt
               - cluster-old.txt
               - service.txt
         
@@ -167,6 +167,7 @@ jobs:
               if [ -z "$OLD_CLUSTER" ]
               then
                     echo "\$OLD_CLUSTER : There is no old cluster found to be deleted"
+              
               else
                     echo "\$OLD_CLUSTER : Found old cluster found to be deleted"
                     eksctl delete cluster --name={$OLD_CLUSTER} 
