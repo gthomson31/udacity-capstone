@@ -132,7 +132,7 @@ jobs:
       steps:
         - checkout
         - run:
-            name: Delete previous app deployment
+            name: delete previous app deployment
             command: |
               OLD_CLUSTER=$(cat /tmp/workspace/cluster-old.txt)
               if [ -z "$OLD_CLUSTER" ]
@@ -145,6 +145,7 @@ jobs:
                     kubectl get svc
                     kubectl delete -f deployment/
               fi
+        - run:
             name: Delete Old kubernetes cluster
             command: |
               OLD_CLUSTER=$(cat /tmp/workspace/cluster-old.txt)
