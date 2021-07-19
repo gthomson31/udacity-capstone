@@ -14,9 +14,14 @@ This repo carries out the following tasks :
 ### Screenshot Submission
 
 - 
-  1. Example of failed LINT due to errors in the code [screenshots/screenshot-lint-fail.png]
-  2. Example of Passed LINT with no errors in the code [screenshots/screenshot-lint-fail.png]
-  3. Example of Working deployment NGINX Site [screenshots/screenshot-nginx.png]
+  1. Example of failed LINT due to errors in the code 
+  ![Example of failed LINT due to errors in the code](screenshots/screenshot-lint-fail.png)
+
+  2. Example of Passed LINT with no errors in the code 
+  ![Example of passed LINT with no errors in the code](screenshots/screenshot-lint-pass.png)
+  
+  3. Example of Working deployment NGINX Site 
+  ![Example of Working deployment NGINX Site ](screenshots/screenshot-nginx.png])
 
 
 ### Built With
