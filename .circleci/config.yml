@@ -21,24 +21,24 @@ commands:
 workflows:
   deployment:
     jobs:
-      # - check-docker-code
-      # - docker/publish:
-      #     image: $DOCKER_LOGIN/udacity-capstone-app-deployment
-      #     path: ~/project/nginx_app
-      #     update-description: true
-      #     docker-context: ~/project/nginx_app
-      #     tag: ${CIRCLE_SHA1:0:7},latest
-      #     requires:
-      #       - check-docker-code
+      - check-docker-code
+      - docker/publish:
+          image: $DOCKER_LOGIN/udacity-capstone-app-deployment
+          path: ~/project/nginx_app
+          update-description: true
+          docker-context: ~/project/nginx_app
+          tag: ${CIRCLE_SHA1:0:7},latest
+          requires:
+            - check-docker-code
       - create-kubernetes-cluster
-          # requires:
-          #   - docker/publish
+          requires:
+            - docker/publish
       - smoke-test:
           requires:
             - create-kubernetes-cluster
-      - delete-previous-deployment:
-          requires:
-            - smoke-test
+      # - delete-previous-deployment:
+      #     requires:
+      #       - smoke-test
       
 jobs:
     check-docker-code:
@@ -75,23 +75,23 @@ jobs:
             command: |
               echo $(aws eks list-clusters | python3 -c "import sys, json; print(json.load(sys.stdin)['clusters'][0])") > cluster-old.txt
               cat cluster-old.txt
-        # - run:
-        #     name: create new kubernetes cluster
-        #     command: |
-        #       # Updating the cluster name in the Yaml 
-        #       sed -i "s/basic-cluster/udacity-capstone-${CIRCLE_SHA1:0:7}/g" cluster.yml
+        - run:
+            name: create new kubernetes cluster
+            command: |
+              # Updating the cluster name in the Yaml 
+              sed -i "s/basic-cluster/udacity-capstone-${CIRCLE_SHA1:0:7}/g" cluster.yml
 
-        #       eksctl create cluster -f deployment/cluster.yml
+              eksctl create cluster -f deployment/cluster.yml
 
-        # - run:
-        #     name: store new cluster name
-        #     command: |
-        #       echo "udacity-capstone-${CIRCLE_SHA1:0:7}" > cluster-new.txt
-        #       cat cluster-new.txt
+        - run:
+            name: store new cluster name
+            command: |
+              echo "udacity-capstone-${CIRCLE_SHA1:0:7}" > cluster-new.txt
+              cat cluster-new.txt
         - run:
             name: Deploy Application on Kubernetes
             command: |
-              aws eks update-kubeconfig --name "udacity-capstone-ce1fee5"
+              aws eks update-kubeconfig --name "udacity-capstone-${CIRCLE_SHA1:0:7}"
               export KUBECONFIG=/root/.kube/config
               kubectl get svc
               kubectl apply -f deployment/
