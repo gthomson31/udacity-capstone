@@ -11,16 +11,11 @@ commands:
           name: Destroy new deployment Infrastructure
           when: on_fail
           command: |
-          aws eks update-kubeconfig --name="udacity-capstone-${CIRCLE_SHA1:0:7}"
-          export KUBECONFIG=/root/.kube/config
-          kubectl get svc
-          kubectl delete -f deployment/
-
-          eksctl delete cluster --name="udacity-capstone-${CIRCLE_SHA1:0:7}" \
-          --region eu-west-1 \
-          --with-oidc \
-          --ssh-access \
-          --ssh-public-key poppy-key   
+            aws eks update-kubeconfig --name="udacity-capstone-${CIRCLE_SHA1:0:7}"
+            export KUBECONFIG=/root/.kube/config
+            kubectl get svc
+            kubectl delete -f deployment/
+            eksctl delete cluster --name="udacity-capstone-${CIRCLE_SHA1:0:7}" 
 
 
 workflows:
@@ -121,31 +116,31 @@ jobs:
         - destroy-environment
 
     smoke-test:
-        docker:
-          - image: python:3.7-alpine3.11
-        steps:
-          - checkout
-          - attach_workspace:
-              at: /tmp/workspace
-          - run:
-              name: Install dependencies
-              command: |
-                apk add --update curl
-          - run:
-              name: smoke test
-              command: |
+      docker:
+        - image: python:3.7-alpine3.11
+      steps:
+        - checkout
+        - attach_workspace:
+            at: /tmp/workspace
+        - run:
+            name: Install dependencies
+            command: |
+              apk add --update curl
+        - run:
+            name: smoke test
+            command: |
 
-                export URL="http://"$(cat /tmp/workspace/service.txt)":15444"
-                echo $URL
+              export URL="http://"$(cat /tmp/workspace/service.txt)":15444"
+              echo $URL
 
-                if curl -s ${URL} | grep "Hello World"
-                then
-                  echo "Smoke Test Success"
-                  return 0  
-                else
-                  echo "Unable to access Website"
-                  return 0
-                fi
+              if curl -s ${URL} | grep "Hello World"
+              then
+                echo "Smoke Test Success"
+                return 0  
+              else
+                echo "Unable to access Website"
+                return 0
+              fi
 
         - destroy-environment
 
@@ -178,11 +173,7 @@ jobs:
                     echo "\$OLD_CLUSTER : There is no old cluster found to be deleted"
               else
                     echo "\$OLD_CLUSTER : Found old cluster found to be deleted"
-                    eksctl delete cluster --name={$OLD_CLUSTER} \
-                    --region eu-west-1 \
-                    --with-oidc \
-                    --ssh-access \
-                    --ssh-public-key poppy-key   
+                    eksctl delete cluster --name={$OLD_CLUSTER} 
               fi
 
 
